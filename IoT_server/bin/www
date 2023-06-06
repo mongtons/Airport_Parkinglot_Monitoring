@@ -1,0 +1,237 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('iotserver:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+// Connect Mongo DB 
+var mongoDB = require("mongodb").MongoClient;
+var url = "mongodb://127.0.0.1:27017/IoTDB";
+var dbObj = null;
+mongoDB.connect(url, function(err, db){
+  dbObj = db;
+  console.log("DB connect");
+});
+
+/**
+* MQTT subscriber (MQTT Server connection & Read resource data)
+*/
+var mqtt = require("mqtt");
+const { stringify } = require('querystring');
+var client = mqtt.connect("mqtt://127.0.0.1")
+ 
+// 접속에 성공하면, 6가지 토픽을 구독.
+client.on("connect", function(){
+  client.subscribe("airport");
+  console.log("Subscribing airport");
+  client.subscribe("congestion");
+  console.log("Subscribing congestion");
+  client.subscribe("parking_name");
+  console.log("Subscribing parking_name");
+  client.subscribe("parking_percent");
+  console.log("Subscribing parking_percent");
+  client.subscribe("car_count");
+  console.log("Subscribing car_count");
+  client.subscribe("parking_count");
+  console.log("Subscribing parking_count");
+})
+// MQTT 응답 메세지 수신시 동작
+client.on("message", function(topic, message){
+  console.log(topic+ ": " + message.toString()); // 수신한 메세지 Topic 출력
+  var obj = JSON.parse(message); // 수신한 메세지의 데이터를 obj 저장
+  obj.create_at = new Date(); // 현재 날짜 데이터를 obj에 추가함.
+  console.log(obj);
+  // send the received data to MongoDB
+  // 수신한 메세지를 Mongo DB에 저장
+  if (topic == "airport"){ // 만약 토픽이 공항명이라면,
+    var cursor = dbObj.db("Resources").collection("Airport");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }	
+  else if (topic == "congestion"){ // 만약 토픽이 주차장 이름이라면,
+    var cursor = dbObj.db("Resources").collection("Congestion");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }
+  else if (topic == "parking_name"){ // 만약 토픽이 주차장 이름이라면,
+    var cursor = dbObj.db("Resources").collection("Parking_Name");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }
+  else if (topic == "parking_percent"){ // 만약 토픽이 주차장 혼잡률이라면,
+    var cursor = dbObj.db("Resources").collection("Parking_Percent");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }
+  else if (topic == "car_count"){ // 만약 토픽이 주차된 차량 수라면,
+    var cursor = dbObj.db("Resources").collection("Car_Count");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }
+  else if (topic == "parking_count"){ // 만약 토픽이 주차칸 수라면,
+    var cursor = dbObj.db("Resources").collection("Parking_Count");
+    cursor.insertOne(obj, function(err, result){
+      if(err){console.log(err);}
+      else{console.log(JSON.stringify(result));}
+    });
+  }
+});
+
+// get data from MongDB and then send it to HTML page using socket
+// Mongo DB에서 최근 데이터 불러와서, HTML 페이지에 업데이트
+var io = require("socket.io")(server);
+io.on("connection", function(socket){
+  socket.on("socket_evt_update", function(data){
+
+    var cursor = dbObj.db("Resources").collection("Airport");
+    var options = {sort:{"_id":-1}, projection: {_id:0, airport:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_airport", JSON.stringify(results[0]));
+      }
+    }); 
+
+    var cursor = dbObj.db("Resources").collection("Congestion");
+    var options = {sort:{"_id":-1}, projection: {_id:0, congestion:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_congestion", JSON.stringify(results[0]));
+      }
+    });
+
+    var cursor = dbObj.db("Resources").collection("Parking_Name");
+    var options = {sort:{"_id":-1}, projection: {_id:0, parking_name:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_parking_name", JSON.stringify(results[0]));
+      }
+    });
+
+    var cursor = dbObj.db("Resources").collection("Parking_Percent");
+    var options = {sort:{"_id":-1}, projection: {_id:0, parking_percent:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_parking_percent", JSON.stringify(results[0]));
+      }
+    });
+    
+    var cursor = dbObj.db("Resources").collection("Car_Count");
+    var options = {sort:{"_id":-1}, projection: {_id:0, car_count:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_car_count", JSON.stringify(results[0]));
+      }
+    });
+
+    var cursor = dbObj.db("Resources").collection("Parking_Count");
+    var options = {sort:{"_id":-1}, projection: {_id:0, parking_count:1, creat_at:1},};
+    var sending_data =cursor.find({},options).limit(1);
+    sending_data.toArray(function(err,results){
+      if(!err){
+        socket.emit("socket_up_parking_count", JSON.stringify(results[0]));
+      }
+    });
+  });
+  socket.on("socket_evt_select", function(data){
+    console.log("MQTT Publish- SELECT control");
+    console.log(data);
+    client.publish("select", data);
+  })
+});
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

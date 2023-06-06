@@ -1,0 +1,138 @@
+/*
+
+Product Admin CSS Template
+
+https://templatemo.com/tm-524-product-admin
+
+*/
+
+html {
+  width: 100%;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+body {
+  width: 100%;
+  -webkit-perspective: 1000;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+.tm-site-title {
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+.navbar {
+  height: 100px;
+  background-color: #567086;
+  padding: 0;
+}
+.navbar .container {
+  position: relative;
+}
+.tm-block-col {
+  margin-bottom: 30px;
+}
+.tm-block {
+  padding: 40px;
+  -webkit-box-shadow: 1px 1px 5px 0 #455c71;
+  -moz-box-shadow: 1px 1px 5px 0 #455c71;
+  box-shadow: 1px 1px 5px 0 #455c71;
+  min-height: 350px;
+  height: 100%;
+  max-height: 450px;
+}
+.tm-block-avatar,
+.tm-block-settings {
+  max-height: none;
+}
+.tm-block-avatar {
+  height: auto;
+}
+.tm-block-h-auto {
+  min-height: 1px;
+  max-height: none;
+  height: auto;
+}
+.tm-block-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 30px;
+}
+.table {
+  background-color: #50697f;
+  color: #fff;
+  font-size: 85%;
+  margin-bottom: 0;
+}
+.table thead th {
+  border-bottom: 0;
+}
+.tm-status-circle {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -3px;
+}
+.moving {
+  background-color: #9be64d;
+  box-shadow: 0 0 8px #9be64d, inset 0 0 8px #9be64d;
+}
+.pending {
+  background-color: #efc54b;
+  box-shadow: 0 0 8px #efc54b, inset 0 0 8px #efc54b;
+}
+.cancelled {
+  background-color: #da534f;
+  box-shadow: 0 0 8px #da534f, inset 0 0 8px #da534f;
+}
+.table td,
+.table th {
+  border-top: 1px solid #415a70;
+  padding: 15px 25px;
+  vertical-align: middle;
+}
+.tm-table-small td,
+.tm-table-small th {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.table-hover tbody tr {
+  transition: all 0.2s ease;
+}
+.table-hover tbody tr:hover {
+  color: #a0c0de;
+}
+.tm-bg-primary-dark {
+  background-color: #435c70;
+}
+.tm-bg-gray {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.tm-table-mt {
+  margin-top: 66px;
+}
+.tm-footer {
+  position: relative;
+  background-color: #567086;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  -webkit-box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+  -moz-box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+  box-shadow: 0 -3px 5px 0 rgba(69, 92, 113, 0.59);
+  margin-top: 265px;
+}
+.tm-footer-link {
+  color: white;
+}
+
+.tm-footer-link:hover,
+.tm-footer-link:focus {
+  color: #aacbea;
+}

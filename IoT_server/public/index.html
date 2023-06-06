@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="team" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Airport Parking Lot Monitoring Service</title>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        var socket = io.connect();
+        var timer = null;
+        var congestionData;
+        $(document).ready(function(){
+            socket.on("socket_up_airport", function(data){
+                data = JSON.parse(data);
+                $(".mqttlist_airport").html(data.airport);
+            });
+            socket.on("socket_up_parking_name", function(data){
+                data = JSON.parse(data);
+                $(".mqttlist_parking_name").html(data.parking_name);
+            });
+            socket.on("socket_up_parking_percent", function(data){
+                data = JSON.parse(data);
+                $(".mqttlist_parking_percent").html(data.parking_percent);
+            });
+            socket.on("socket_up_congestion", function(data){
+                data = JSON.parse(data);
+                congestionData=data.congestion.toString()
+                $(".mqttlist_congestion").html(data.congestion);
+                if(congestionData=="원활"){
+                    $("#led").html('<div class="tm-status-circle moving"></div>');
+                }else if(congestionData=="혼잡"){
+                    $("#led").html('<div class="tm-status-circle pending"></div>');
+                }else{
+                    $("#led").html('<div class="tm-status-circle cancelled"></div>');
+                }
+            });
+            socket.on("socket_up_car_count", function(data){
+                data = JSON.parse(data);
+                $(".mqttlist_car_count").html(data.car_count)
+            });
+            socket.on("socket_up_parking_count", function(data){
+                data = JSON.parse(data);
+                $(".mqttlist_parking_count").html(data.parking_count)
+            });
+            if(timer==null){
+                timer = window.setInterval("timer_1()", 3000);
+            }
+        });
+        function timer_1(){
+            socket.emit("socket_evt_update", JSON.stringify({}));
+        }
+        function changeAirport(){
+            var airport=document.getElementById("airport");
+            var value=(airport.options[airport.selectedIndex].value);
+            console.log("socket")
+            socket.emit("socket_evt_select", value)
+        }
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <!-- https://fonts.google.com/specimen/Roboto -->
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="css/templatemo-style.css">
+    <!--
+	Product Admin CSS Template
+	https://templatemo.com/tm-524-product-admin
+	-->
+</head>
+<body style="background-image:url('../images/background_img.jpg')">
+    <div id="home">
+        <div class="overlay"></div>
+        <nav class="navbar navbar-expand-xl">
+            <div class="container h-100">
+                <a class="navbar-brand" href="index.html">
+                    <h1 class="tm-site-title mb-0">Airport Parking Lot Monitoring Service</h1>
+                </a>
+                <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars tm-nav-icon"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p class="text-white mt-5 mb-5">Select <b>Airport</b></p>
+                </div>
+            </div>
+            <!-- row -->
+            <div class="col-12 tm-block-col">
+                <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+                    <h2 class="tm-block-title">Airport Parking lot</h2>
+                    <div id="msg">
+                        <div id="mqtt_logs">
+                            <select id="airport" onchange="changeAirport()">
+                                <option value="GMP">김포공항</option>
+                                <option value="PUS">김해공항</option>
+                                <option value="CJU">제주공항</option>
+                                <option value="TAE">대구공항</option>
+                                <option value="KWJ">광주공항</option>
+                                <option value="RSU">여수공항</option>
+                                <option value="USN">울산공항</option>
+                                <option value="KUV">군산공항</option>
+                                <option value="WJU">원주공항</option>
+                                <option value="CJJ">청주공항</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">공항</th>
+                                <th scope="col">상태</th>
+                                <th scope="col">주차장</th>
+                                <th scope="col">입차률</th>
+                                <th scope="col">차량 수</th>
+                                <th scope="col">전체 주차공간</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"><b><div class="mqttlist_airport"></div></b></th>
+                                <td>
+                                    <span id="led"></span>
+                                    <b class="mqttlist_congestion"></b>
+                                </td>
+                                <td><b><div class="mqttlist_parking_name"></div></b></td>
+                                <td><b><div class="mqttlist_parking_percent"></div></b></td>
+                                <td><b><div class="mqttlist_car_count"></div></b></td>
+                                <td><b><div class="mqttlist_parking_count"></div></b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <footer class="tm-footer">
+            <div class="col-12 font-weight-light">
+                <p class="text-center text-white mb-0 px-4 small">
+                    Copyright &copy; <b>2018</b> All rights reserved. 
+                    
+                    Design: <a rel="nofollow noopener" href="https://templatemo.com" class="tm-footer-link">Template Mo</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
