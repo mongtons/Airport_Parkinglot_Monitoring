@@ -101,5 +101,6 @@ client.on("connect", function(){
   console.log("Subscribing parking_count");
 })
 ```
-&nbsp;구독한 Topic을 웹 페이지에 사용하기 위해 MongoDB에 저장한다. 또한 저장된 데이터를 사용하기 위해 socket을 이용하여 HTML코드 상으로 전송한다. 전송된 데이터를 코드상에서 출력하게 된다면 아래와 같은 결과가 나온다.
-![image01]()
+&nbsp;구독한 Topic을 웹 페이지에 사용하기 위해 MongoDB에 저장한다. 또한 저장된 데이터를 사용하기 위해 socket을 이용하여 HTML코드 상으로 전송한다. 전송된 데이터를 코드상에서 출력하게 된다면 아래와 같은 결과가 나온다.   
+![image01](etc/img/image01.png)![image02](etc/img/image02.png)   
+해당 수치는 Topic으로 받아온 값이다.
