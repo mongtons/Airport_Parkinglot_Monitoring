@@ -22,7 +22,7 @@ app.set('port', port);
 var server = http.createServer(app);
 // Connect Mongo DB 
 var mongoDB = require("mongodb").MongoClient;
-var url = "mongodb://127.0.0.1:27017/IoTDB";
+var url = "";
 var dbObj = null;
 mongoDB.connect(url, function(err, db){
   dbObj = db;
@@ -34,7 +34,7 @@ mongoDB.connect(url, function(err, db){
 */
 var mqtt = require("mqtt");
 const { stringify } = require('querystring');
-var client = mqtt.connect("mqtt://127.0.0.1")
+var client = mqtt.connect("")
  
 // 접속에 성공하면, 6가지 토픽을 구독.
 client.on("connect", function(){
