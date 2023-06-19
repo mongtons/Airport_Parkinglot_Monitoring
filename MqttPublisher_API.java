@@ -102,7 +102,7 @@ public class MqttPublisher_API implements MqttCallback{
     
     public static String[] get_parking_percent() {
     	String url = "http://openapi.airport.co.kr/service/rest/AirportParkingCongestion/airportParkingCongestionRT" // https가 아닌 http 프로토콜을 통해 접근해야 함
-    			+ "?serviceKey=yVXWL9VZFvDwuNmuCT%2FYSw0fYOENEf49hUT52Qf3JLEI8jFk6eLgnDD34WoFeJGamB4LnaPrtytSShNsz9ZpFA%3D%3D"
+    			+ "?serviceKey="
     			+ "&numOfRows=1000"
     			+ "&pageNo=1"
     			+ "&schAirportCode="+airportName;
