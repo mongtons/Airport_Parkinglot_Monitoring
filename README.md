@@ -11,3 +11,6 @@
 * Mongo DB `1.37.0`
 * eclipse `2022-12 (4.24.0)`
 * templete `https://templatemo.com/tm-524-product-admin`
+* Topic `https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15063437`
+## 프로젝트 구조
+&nbsp;이 프로젝트는 ‘공공데이터포털’의 ‘한국공항공사_전국공항 주차장 혼잡도’ 데이터를 활용한 프로젝트이다. 인증키를 활용하여 XML형식의 데이터를 MQTT 통신을 통해 REST를 한다. XML 데이터에서 원하는 데이터를 Node.js로 구동하는 HTML 웹 페이지에 출력하는 방식이다. 또한 원하는 공항명을 웹 페이지에서 dropdown 버튼으로 선택하면 선택된 공항 문자열은 MQTT broker에 publish 한다. 해당 문자열은 subscribe하는 사용자가 받게 되고, 받은 공항명 문자열을 이용해 ‘한국공항공사_전국공항 주차장 혼잡도’에서 받은 공항명의 주차장 데이터를 웹사이트에 출력하는 방식이다.
